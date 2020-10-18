@@ -13,12 +13,11 @@ class InvertedIndex:
             try:
                 documents.extend(self.word_in_docs[word])
             except KeyError:
-                pass # если искомое слово отсутствует в индексе
+                pass  # если искомое слово отсутствует в индексе
 
         documents = list(set(documents))
 
         return documents
-
 
     def dump(self, filepath: str):
         with open(filepath, "w") as file:
@@ -74,4 +73,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
