@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-import inverted_index_starter as IIS
+import inverted_index as IIS
 
 
 def test_load_documents_on_doesnt_exist_file():
@@ -41,13 +41,13 @@ def test_build_inverted_index():
             [2, "hello  world"]]
     inverted_index = IIS.build_inverted_index(docs)
 
-    assert expect_inverted_index == inverted_index.word_in_docs
+    assert expect_inverted_index == inverted_index.word_in_docs_map
 
 
 def test_dump_inverted_index():
     inverted_index = IIS.InvertedIndex()
 
-    inverted_index.word_in_docs = {"hello": [1, 2],
+    inverted_index.word_in_docs_map = {"hello": [1, 2],
                                    "world": [2]}
 
     inverted_index.dump("tmp.json")
@@ -62,7 +62,7 @@ def test_dump_and_load_inverted_index():
 
     inverted_index = IIS.InvertedIndex()
 
-    inverted_index.word_in_docs = expected
+    inverted_index.word_in_docs_map = expected
 
     inverted_index.dump("tmp.json")
     del inverted_index
@@ -71,12 +71,12 @@ def test_dump_and_load_inverted_index():
 
     os.remove("tmp.json")
 
-    assert expected == inverted_index.word_in_docs
+    assert expected == inverted_index.word_in_docs_map
 
 
 def test_query_in_inverted_index():
     inverted_index = IIS.InvertedIndex()
-    inverted_index.word_in_docs = {"word": [1, 4],
+    inverted_index.word_in_docs_map = {"word": [1, 4],
                                    "hello": [1, 2],
                                    "covid": [3, 4]}
 
@@ -92,7 +92,7 @@ def test_query_in_inverted_index():
 
 def test_query_not_in_inverted_index():
     inverted_index = IIS.InvertedIndex()
-    inverted_index.word_in_docs = {"word": [1, 4],
+    inverted_index.word_in_docs_map = {"word": [1, 4],
                                    "hello": [1, 2],
                                    "covid": [3, 4]}
 
