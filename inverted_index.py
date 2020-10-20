@@ -1,5 +1,7 @@
 import json
 
+from storage_policy import JsonStoragePolicy
+
 
 class InvertedIndex:
     def __init__(self):
@@ -19,17 +21,14 @@ class InvertedIndex:
 
         return documents
 
-    def dump(self, filepath: str):
-        # storage_policy.dump(self.word_in_docs,filepath)
-        with open(filepath, "w") as file:
-            json.dump(self.word_in_docs_map, file)
+    def dump(self, filepath: str, storage_policy=JsonStoragePolicy):
+        storage_policy.dump(self.word_in_docs_map, filepath)
 
     @classmethod
-    def load(cls, filepath: str):
+    def load(cls, filepath: str, storage_policy=JsonStoragePolicy):
         inverted_index = cls()
 
-        with open(filepath, "r") as file:
-            inverted_index.word_in_docs_map = json.load(file)
+        inverted_index.word_in_docs_map = storage_policy.load(filepath)
 
         return inverted_index
 

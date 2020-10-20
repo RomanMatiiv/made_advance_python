@@ -1,8 +1,10 @@
+import json
 import os
 
 import pytest
 
 import inverted_index as IIS
+from storage_policy import JsonStoragePolicy
 
 
 def test_load_documents_on_doesnt_exist_file():
@@ -100,6 +102,26 @@ def test_query_not_in_inverted_index():
     docs = inverted_index.query(["ABS", "DDDDD"])
 
     assert len(expect_docs) == len(docs)
+
+
+def test_json_storage_policy_dump():
+    mapping = {"d": [1, 2]}
+
+    with File(content="") as f:
+        JsonStoragePolicy.dump(mapping, file_path=f.file_path)
+
+
+def test_json_storage_policy_load():
+    expect_mapping = {"a": [3, 6],
+                      "rr": [1]}
+
+    with File(content="") as f:
+        with open(f.file_path, "w") as f_out:
+            json.dump(expect_mapping, f_out)
+
+        mapping = JsonStoragePolicy.load(f.file_path)
+
+    assert expect_mapping == mapping
 
 
 class File:
