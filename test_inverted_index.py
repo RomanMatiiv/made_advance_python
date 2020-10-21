@@ -104,22 +104,23 @@ def test_query_not_in_inverted_index():
     assert len(expect_docs) == len(docs)
 
 
-def test_json_storage_policy_dump():
+def test_json_storage_policy_dump(tmpdir):
+    file = tmpdir.join("tmp_file")
     mapping = {"d": [1, 2]}
 
-    with File(content="") as f:
-        JsonStoragePolicy.dump(mapping, file_path=f.file_path)
+    JsonStoragePolicy.dump(mapping, file_path=file.strpath)
 
 
-def test_json_storage_policy_load():
+def test_json_storage_policy_load(tmpdir):
+    file = tmpdir.join("tmp.json")
+
     expect_mapping = {"a": [3, 6],
                       "rr": [1]}
 
-    with File(content="") as f:
-        with open(f.file_path, "w") as f_out:
-            json.dump(expect_mapping, f_out)
+    with open(file.strpath, "w") as f_out:
+        json.dump(expect_mapping, f_out)
 
-        mapping = JsonStoragePolicy.load(f.file_path)
+    mapping = JsonStoragePolicy.load(file.strpath)
 
     assert expect_mapping == mapping
 
