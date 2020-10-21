@@ -1,17 +1,22 @@
+from abc import ABC
+from abc import abstractmethod
 import json
 
 
-class StoragePolicy:
+class StoragePolicy(ABC):
+
     @staticmethod
+    @abstractmethod
     def dump(word_to_docs_mapping, filepath: str):
         pass
 
     @staticmethod
+    @abstractmethod
     def load(filepath: str):
         pass
 
 
-class JsonStoragePolicy:
+class JsonStoragePolicy(StoragePolicy):
     @staticmethod
     def dump(python_dict: dict, file_path: str):
         with open(file_path, "w") as file:
