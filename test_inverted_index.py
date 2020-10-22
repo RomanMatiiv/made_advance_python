@@ -7,6 +7,23 @@ import inverted_index as IIS
 from storage_policy import JsonStoragePolicy
 
 
+@pytest.fixture()
+def small_dataset(tmpdir) -> dict:
+    expect = {}
+
+    expect["raw_docs"] = "1\tHello\n2\tworld\n3\thow are you?"
+
+    expect["list_docs"] = [[1, "Hello"],
+                           [2, "world"],
+                           [3, "how are you?"]]
+
+    file = tmpdir.join("raw_file_on_disc")
+    file.write(expect["raw_docs"])
+    expect["file_with_raw_docs"] = file.strpath
+
+    return expect
+
+
 def test_load_documents_on_doesnt_exist_file():
     path_to_doesnt_exist_file = "fake/path/to/dataset.txt"
 
@@ -123,24 +140,3 @@ def test_json_storage_policy_load(tmpdir):
     mapping = JsonStoragePolicy.load(file.strpath)
 
     assert expect_mapping == mapping
-
-
-class File:
-    def __init__(self, content, file_path="file_for_test.txt"):
-        self.file_path = file_path
-        self.content = content
-
-        self._write_to_file(content)
-
-    def _write_to_file(self, content):
-        with open(self.file_path, "w") as fout:
-            fout.write(content)
-
-    def _remove_file(self):
-        os.remove(self.file_path)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._remove_file()
