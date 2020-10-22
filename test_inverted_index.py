@@ -31,24 +31,22 @@ def test_load_documents_on_doesnt_exist_file():
         IIS.load_documents(path_to_doesnt_exist_file)
 
 
-def test_load_documents_on_2_doc():
-    docs = "1\tHello\n2\tworld\n"
+def test_load_documents_on_2_doc(small_dataset):
+    expected_docs = small_dataset["list_docs"]
 
-    expected_docs = [[1, "Hello"],
-                     [2, "world"]]
+    load_docs = IIS.load_documents(small_dataset["file_with_raw_docs"])
 
-    with File(content=docs) as f:
-        load_docs = IIS.load_documents(f.file_path)
-
-        assert expected_docs == load_docs
+    assert expected_docs == load_docs
 
 
-def test_load_documents_on_incorrect_doc_struct():
+def test_load_documents_on_incorrect_doc_struct(tmpdir):
     docs = "1\tHello\n2\tworld\tworld\n"
 
+    file = tmpdir.join("tmp.txt")
+    file.write(docs)
+
     with pytest.raises(ValueError):
-        with File(content=docs) as f:
-            IIS.load_documents(f.file_path)
+        IIS.load_documents(file.strpath)
 
 
 def test_build_inverted_index():
