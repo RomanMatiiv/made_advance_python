@@ -24,6 +24,16 @@ def small_dataset(tmpdir) -> dict:
     return expect
 
 
+@pytest.fixture()
+def sample_inverted_index(tmpdir):
+    inverted_index = {"hello": [1, 4],
+                      "world": [1],
+                      "I": [3, 4],
+                      "am": [2],
+                      "human": [2, 3]}
+    return inverted_index
+
+
 def test_load_documents_on_doesnt_exist_file():
     path_to_doesnt_exist_file = "fake/path/to/dataset.txt"
 
@@ -119,18 +129,16 @@ def test_query_not_in_inverted_index():
     assert len(expect_docs) == len(docs)
 
 
-def test_json_storage_policy_dump(tmpdir):
+def test_json_storage_policy_dump(tmpdir, sample_inverted_index):
     file = tmpdir.join("tmp_file")
-    mapping = {"d": [1, 2]}
 
-    JsonStoragePolicy.dump(mapping, file_path=file.strpath)
+    JsonStoragePolicy.dump(sample_inverted_index, file_path=file.strpath)
 
 
-def test_json_storage_policy_load(tmpdir):
+def test_json_storage_policy_load(tmpdir, sample_inverted_index):
     file = tmpdir.join("tmp.json")
 
-    expect_mapping = {"a": [3, 6],
-                      "rr": [1]}
+    expect_mapping = sample_inverted_index
 
     with open(file.strpath, "w") as f_out:
         json.dump(expect_mapping, f_out)
@@ -138,3 +146,8 @@ def test_json_storage_policy_load(tmpdir):
     mapping = JsonStoragePolicy.load(file.strpath)
 
     assert expect_mapping == mapping
+
+
+# def test_pkl_storage_policy(sample_inverted_index):
+
+
