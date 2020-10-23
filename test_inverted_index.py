@@ -5,6 +5,7 @@ import pytest
 
 import inverted_index as IIS
 from storage_policy import JsonStoragePolicy
+from storage_policy import PklStoragePolicy
 
 
 @pytest.fixture()
@@ -129,25 +130,27 @@ def test_query_not_in_inverted_index():
     assert len(expect_docs) == len(docs)
 
 
-def test_json_storage_policy_dump(tmpdir, sample_inverted_index):
-    file = tmpdir.join("tmp_file")
+def test_json_storage_policy(tmpdir, sample_inverted_index):
+    expect = sample_inverted_index
 
-    JsonStoragePolicy.dump(sample_inverted_index, file_path=file.strpath)
+    path_to_dump = tmpdir.join("dump_tmp").strpath
 
+    JsonStoragePolicy.dump(expect, path_to_dump)
 
-def test_json_storage_policy_load(tmpdir, sample_inverted_index):
-    file = tmpdir.join("tmp.json")
+    real = JsonStoragePolicy.load(path_to_dump)
 
-    expect_mapping = sample_inverted_index
-
-    with open(file.strpath, "w") as f_out:
-        json.dump(expect_mapping, f_out)
-
-    mapping = JsonStoragePolicy.load(file.strpath)
-
-    assert expect_mapping == mapping
+    assert expect == real
 
 
-# def test_pkl_storage_policy(sample_inverted_index):
+def test_pkl_storage_policy(tmpdir, sample_inverted_index):
+    expect = sample_inverted_index
+
+    path_to_dump = tmpdir.join("dump_tmp").strpath
+
+    PklStoragePolicy.dump(expect, path_to_dump)
+
+    real = PklStoragePolicy.load(path_to_dump)
+
+    assert expect == real
 
 
