@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 import json
 import pickle
+import zlib
 
 
 class StoragePolicy(ABC):
@@ -47,3 +48,30 @@ class PklStoragePolicy(StoragePolicy):
             result = pickle.load(f)
 
         return result
+
+
+class ZlibStoragePolicy(StoragePolicy):
+    @staticmethod
+    def dump(word_to_docs_mapping, filepath: str, **kwargs) -> None:
+        try:
+            level = kwargs["level"]
+        except KeyError:
+            level = 6
+
+        w2d_mapping_str = json.dumps(word_to_docs_mapping)
+        w2d_mapping_bytes = bytes(w2d_mapping_str, encoding="utf8")
+        w2d_mapping_compress = zlib.compress(w2d_mapping_bytes, level=level)
+        with open(filepath, "wb") as f:
+            f.write(w2d_mapping_compress)
+
+        return None
+
+    @staticmethod
+    def load(filepath: str) -> dict:
+        with open(filepath, "rb") as f:
+            data = f.read()
+            data_decompress = zlib.decompress(data)
+            data_str = data_decompress.decode(encoding="utf8")
+            data_dict = json.loads(data_str)
+
+        return data_dict

@@ -6,6 +6,7 @@ import pytest
 import inverted_index as IIS
 from storage_policy import JsonStoragePolicy
 from storage_policy import PklStoragePolicy
+from storage_policy import ZlibStoragePolicy
 
 
 @pytest.fixture()
@@ -154,3 +155,13 @@ def test_pkl_storage_policy(tmpdir, sample_inverted_index):
     assert expect == real
 
 
+def test_zlib_storage_policy(tmpdir, sample_inverted_index):
+    expect = sample_inverted_index
+
+    path_to_dump = tmpdir.join("dump_tmp").strpath
+
+    ZlibStoragePolicy.dump(expect, path_to_dump)
+
+    real = ZlibStoragePolicy.load(path_to_dump)
+
+    assert expect == real
