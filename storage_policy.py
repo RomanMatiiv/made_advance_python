@@ -1,8 +1,12 @@
-from abc import ABC
-from abc import abstractmethod
+"""
+Модуль в котором определены политики(способы)
+сохранение словаря с инвертированным индексом на жесткий диск
+"""
 import json
 import pickle
 import zlib
+from abc import ABC
+from abc import abstractmethod
 
 
 class StoragePolicy(ABC):

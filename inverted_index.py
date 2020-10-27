@@ -1,14 +1,35 @@
-import json
-
+"""
+Модуль, в котором
+1. Реализован класс с инвертированны индексом
+2. CLI интерфейс для работы с инвертированным индексом
+"""
 from storage_policy import JsonStoragePolicy
 
 
 class InvertedIndex:
+    """
+    Класс в котором реализован инвертированный индекс
+
+    Инвертированный индекс представляет собой словарь, где ключами являются
+    слова (термы), а значениями - списки идентификаторов документов,
+    в которых указанный терм встречается
+    """
     def __init__(self):
         self.word_in_docs_map = {}
 
     def query(self, words: list) -> list:
-        """Return the list of relevant documents for the given query"""
+        """
+        Возвращает список документов, в которых данные слова встречаются
+
+        Если слов на вход 2 и более, то вернет только общие документы
+        Те документы в которых есть 1-е слово И 2-е слово
+
+        Args:
+            words: список со словами
+
+        Returns: список с документами
+
+        """
         documents = []
 
         for word in words:
@@ -22,10 +43,32 @@ class InvertedIndex:
         return documents
 
     def dump(self, filepath: str, storage_policy=JsonStoragePolicy):
+        """
+        Сохраняет словарь с инвертированным индексом
+
+        Args:
+            filepath: путь до файла в который сохранить
+            storage_policy: метод обработки сохраняемого объекта
+
+        Returns: None
+
+        """
         storage_policy.dump(self.word_in_docs_map, filepath)
 
     @classmethod
     def load(cls, filepath: str, storage_policy=JsonStoragePolicy):
+        """
+        Загружает объект инвертированнного индекса с диска
+
+        По факту загружает только словарь для объекта,
+        а потом уже и сам объект воссоздает
+
+        Args:
+            filepath: путь до файла в который сохранить
+            storage_policy: метод обработки сохраняемого объекта
+
+        Returns: InvertedIndex
+        """
         inverted_index = cls()
 
         inverted_index.word_in_docs_map = storage_policy.load(filepath)
@@ -34,6 +77,27 @@ class InvertedIndex:
 
 
 def load_documents(filepath: str) -> list:
+    """
+    Загружает документы с диска
+
+    Документы должны быть в формате
+
+    doc_id<знак табуляции>doc_text<перенос_строки>
+
+    Например
+    1/tHello world/n
+    2/tHow are you?/n
+
+    Args:
+        filepath: пусть до файла с документами
+
+    Returns: массив с документами
+             в формате
+             [
+             [doc_id, doc_text],
+             ...
+             ]
+    """
     documents = []
 
     with open(filepath) as fin:
@@ -47,6 +111,22 @@ def load_documents(filepath: str) -> list:
 
 
 def build_inverted_index(documents: list):
+    """
+    Построение ивертированного индекса
+
+    По списку с документами строит ивертированный индекс
+
+    Args:
+        documents: массив с документами
+                   в формате
+                   [
+                    [doc_id, doc_text],
+                    ...
+                   ]
+
+    Returns: InvertedIndex
+
+    """
     inverted_index = InvertedIndex()
 
     for doc_id, doc in documents:
