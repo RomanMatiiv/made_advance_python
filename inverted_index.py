@@ -3,6 +3,7 @@
 1. Реализован класс с инвертированны индексом
 2. CLI интерфейс для работы с инвертированным индексом
 """
+from argparse import ArgumentParser
 from storage_policy import JsonStoragePolicy
 
 
@@ -151,5 +152,22 @@ def main():
     document_ids = inverted_index.query(["two", "words"])
 
 
+def parse_arguments():
+    args_parser = ArgumentParser()
+    subparsers = args_parser.add_subparsers()
+
+    args_build = subparsers.add_parser(name="build")
+    args_build.add_argument("--input")
+
+    args_query = subparsers.add_parser("query")
+    args_query.add_argument("--output")
+
+    args = args_parser.parse_args()
+
+    return args
+
 if __name__ == "__main__":
-    main()
+    args = parse_arguments()
+
+
+    print(args)
