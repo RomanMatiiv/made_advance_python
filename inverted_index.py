@@ -144,23 +144,66 @@ def build_inverted_index(documents: list):
     return inverted_index
 
 
-def main():
-    documents = load_documents("/path/to/dataset")
-    inverted_index = build_inverted_index(documents)
-    inverted_index.dump("/path/to/inverted.index")
-    inverted_index = InvertedIndex.load("/path/to/inverted.index")
-    document_ids = inverted_index.query(["two", "words"])
+# def main():
+#     documents = load_documents("/path/to/dataset")
+#     inverted_index = build_inverted_index(documents)
+#     inverted_index.dump("/path/to/inverted.index")
+#     inverted_index = InvertedIndex.load("/path/to/inverted.index")
+#     document_ids = inverted_index.query(["two", "words"])
 
 
 def parse_arguments():
     args_parser = ArgumentParser()
     subparsers = args_parser.add_subparsers()
 
-    args_build = subparsers.add_parser(name="build")
-    args_build.add_argument("--input")
+    # build command
+    build_description = """
+                        create inverted index from dataset.
+                        Format dataset doc_id<tab>doc_text<unix line separator>
+                        """
+    build = subparsers.add_parser(name="build",
+                                  description=build_description)
+    build.add_argument("--dataset",
+                       "-d",
+                       dest="dataset",
+                       help="path to file with documents",
+                       required=True,
+                       type=str)
+    build.add_argument("--output",
+                       dest="output",
+                       help="path to file with saved inverted index",
+                       required=True,
+                       type=str)
 
-    args_query = subparsers.add_parser("query")
-    args_query.add_argument("--output")
+    # query command
+    query_description = """
+                        Show which document contains query
+                        If query is more than one worlds algo will file
+                        documents union.
+                        """
+    query = subparsers.add_parser(name="query",
+                                  description=query_description)
+    query.add_argument("--index",
+                       dest="index",
+                       help="path to file with saved inverted index",
+                       required=True,
+                       type=str)
+    # TODO разобраться как сделать так чтоб один из них был обязательным
+    query.add_argument("--query-file-utf8",
+                       dest="query",
+                       help="file with query in utf8 coding",
+                       required=False,
+                       type=str)
+    query.add_argument("--query-file-cp1251",
+                       dest="query",
+                       help="file with query in cp1251 coding",
+                       required=False,
+                       type=str)
+    query.add_argument("--query",
+                       dest="query",
+                       help=None,
+                       required=False,
+                       type=str)
 
     args = args_parser.parse_args()
 
