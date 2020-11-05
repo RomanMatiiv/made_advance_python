@@ -207,7 +207,8 @@ def parse_arguments():
                        dest="query",
                        help=None,
                        required=False,
-                       type=str)
+                       type=str,
+                       nargs="+")
 
     args = args_parser.parse_args()
 
