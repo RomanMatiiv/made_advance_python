@@ -3,7 +3,10 @@
 1. Реализован класс с инвертированны индексом
 2. CLI интерфейс для работы с инвертированным индексом
 """
+import sys
+from argparse import FileType
 from argparse import ArgumentParser
+
 from storage_policy import JsonStoragePolicy
 
 
@@ -164,7 +167,6 @@ def parse_arguments():
     build = subparsers.add_parser(name="build",
                                   description=build_description)
     build.add_argument("--dataset",
-                       "-d",
                        dest="dataset",
                        help="path to file with documents",
                        required=True,
@@ -193,12 +195,14 @@ def parse_arguments():
                        dest="query",
                        help="file with query in utf8 coding",
                        required=False,
-                       type=str)
+                       type=FileType('r'),
+                       default=sys.stdin)
     query.add_argument("--query-file-cp1251",
                        dest="query",
                        help="file with query in cp1251 coding",
                        required=False,
-                       type=str)
+                       type=FileType('r'),
+                       default=sys.stdin)
     query.add_argument("--query",
                        dest="query",
                        help=None,
