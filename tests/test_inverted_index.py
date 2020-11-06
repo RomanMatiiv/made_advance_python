@@ -9,11 +9,13 @@ import inverted_index as IIS
 def small_dataset(tmpdir) -> dict:
     expect = {}
 
-    expect["raw_docs"] = "1\tHello\n2\tworld\n3\thow are you?"
+    expect["raw_docs"] = "1\tarticle1    Hello\n" \
+                         "2\tarticle2    world\n" \
+                         "3\tarticle3    how are you?"
 
-    expect["list_docs"] = [[1, "Hello"],
-                           [2, "world"],
-                           [3, "how are you?"]]
+    expect["list_docs"] = [IIS.Document(1, "article1", "Hello"),
+                           IIS.Document(2, "article2", "world"),
+                           IIS.Document(3, "article3", "how are you?")]
 
     file = tmpdir.join("raw_file_on_disc")
     file.write(expect["raw_docs"])

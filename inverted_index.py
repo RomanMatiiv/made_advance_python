@@ -10,6 +10,29 @@ from argparse import ArgumentParser
 from storage_policy import JsonStoragePolicy
 
 
+class Document:
+    """
+    Структура данных, представляющее собой документ
+    * id - номер документа
+    * name - название документа
+    * content - содержание документа
+    """
+    __slots__ = ("id", "name", "content")
+
+    def __init__(self, id: int, name: str, content: str):
+        self.id = id
+        self.name = name
+        self.content = content
+
+    def __eq__(self, other):
+        if (self.id == other.id and
+            self.name == other.name and
+            self.content == other.content):
+            return True
+        else:
+            return False
+
+
 class InvertedIndex:
     """
     Класс в котором реализован инвертированный индекс
@@ -109,7 +132,13 @@ def load_documents(filepath: str) -> list:
             doc_id, text = (row.strip()
                                .split('\t'))
             doc_id = int(doc_id)
-            documents.append([doc_id, text])
+            doc_name = text.split()[0]
+            doc_content = text.replace(doc_name, "")
+            doc_content = doc_content.strip()
+
+            doc = Document(doc_id, doc_name, doc_content)
+
+            documents.append(doc)
 
     return documents
 
