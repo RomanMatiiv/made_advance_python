@@ -153,8 +153,9 @@ def build_inverted_index(documents: list):
         documents: массив с документами
                    в формате
                    [
-                    [doc_id, doc_text],
+                   Document(id,name,context),
                     ...
+                   Document(id,name,context)
                    ]
 
     Returns: InvertedIndex
