@@ -162,12 +162,13 @@ def build_inverted_index(documents: list):
     """
     inverted_index = InvertedIndex()
 
-    for doc_id, doc in documents:
-        for word in doc.split():
+    for doc in documents:
+        content = doc.name + " " + doc.content
+        for word in content.split():
             if word in inverted_index.word_in_docs_map.keys():
-                inverted_index.word_in_docs_map[word].append(doc_id)
+                inverted_index.word_in_docs_map[word].append(doc.id)
             else:
-                inverted_index.word_in_docs_map[word] = [doc_id]
+                inverted_index.word_in_docs_map[word] = [doc.id]
 
     # Удаление дубликатов
     for key in inverted_index.word_in_docs_map.keys():

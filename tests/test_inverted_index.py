@@ -11,17 +11,20 @@ def small_dataset(tmpdir) -> dict:
 
     expect["raw_docs"] = "1\tarticle1    Hello\n" \
                          "2\tarticle2    Hello world\n" \
-                         "3\tarticle3    how are you?"
+                         "3\tarticle3    how are you"
 
     expect["list_docs"] = [IIS.Document(1, "article1", "Hello"),
                            IIS.Document(2, "article2", "Hello world"),
-                           IIS.Document(3, "article3", "how are you?")]
+                           IIS.Document(3, "article3", "how are you")]
 
     expect["inverted_index"] = {"Hello": [1, 2],
                                 "world": [2],
                                 "how": [3],
                                 "are": [3],
-                                "you": [3]}
+                                "you": [3],
+                                "article1": [1],
+                                "article2": [2],
+                                "article3": [3]}
 
     file = tmpdir.join("raw_file_on_disc")
     file.write(expect["raw_docs"])
@@ -64,6 +67,12 @@ def test_build_inverted_index(small_dataset):
     inverted_index = IIS.build_inverted_index(docs)
 
     assert expect_inverted_index == inverted_index.word_in_docs_map
+
+    # assert len(expect_inverted_index) == len(inverted_index.word_in_docs_map)
+    #
+    # for world in expect_inverted_index.keys():
+    #     assert expect_inverted_index[world] == inverted_index.word_in_docs_map[world]
+
 
 
 def test_dump_inverted_index():
