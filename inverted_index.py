@@ -230,6 +230,8 @@ def parse_arguments():
                         """
     query = subparsers.add_parser(name="query",
                                   description=query_description)
+    query.set_defaults(callback=query_callback)
+
     query.add_argument("--index",
                        dest="index",
                        help="path to file with saved inverted index",
