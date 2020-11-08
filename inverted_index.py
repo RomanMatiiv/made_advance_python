@@ -58,17 +58,20 @@ class InvertedIndex:
         Returns: список с документами
 
         """
-        documents = []
+        queries = []
 
         for word in words:
             try:
-                documents.extend(self.word_in_docs_map[word])
+                queries.append(self.word_in_docs_map[word])
             except KeyError:
-                pass  # если искомое слово отсутствует в индексе
+                queries.append([])
 
-        documents = list(set(documents))
+        union = set(queries[0])
 
-        return documents
+        for query in queries:
+            union = union.intersection(query)
+
+        return union
 
     def dump(self, filepath: str, storage_policy=JsonStoragePolicy):
         """
