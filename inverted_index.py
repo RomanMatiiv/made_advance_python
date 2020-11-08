@@ -13,6 +13,7 @@ from storage_policy import JsonStoragePolicy
 class Document:
     """
     Структура данных, представляющее собой документ
+
     * id - номер документа
     * name - название документа
     * content - содержание документа
@@ -120,9 +121,9 @@ def load_documents(filepath: str) -> list:
 
     Returns: массив с документами
              в формате
-             [
-             [doc_id, doc_text],
-             ...
+             [Document(doc_id, doc_name, doc_content)
+             ...,
+             Document(doc_id, doc_name, doc_content)
              ]
     """
     documents = []
@@ -185,18 +186,27 @@ def build_inverted_index(documents: list):
 #     inverted_index = InvertedIndex.load("/path/to/inverted.index")
 #     document_ids = inverted_index.query(["two", "words"])
 
+def build_callback():
+    print("build")
+
+
+def query_callback():
+    print("query")
+
 
 def parse_arguments():
     args_parser = ArgumentParser()
     subparsers = args_parser.add_subparsers()
 
-    # build command
+    # BUILD
     build_description = """
                         create inverted index from dataset.
                         Format dataset doc_id<tab>doc_text<unix line separator>
                         """
     build = subparsers.add_parser(name="build",
                                   description=build_description)
+    build.set_defaults(callback=build_callback)
+
     build.add_argument("--dataset",
                        dest="dataset",
                        help="path to file with documents",
@@ -208,7 +218,7 @@ def parse_arguments():
                        required=True,
                        type=str)
 
-    # query command
+    # QUERY
     query_description = """
                         Show which document contains query
                         If query is more than one worlds algo will file
@@ -249,5 +259,6 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
 
+    args.callback()
 
     print(args)
