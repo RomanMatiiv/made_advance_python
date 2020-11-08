@@ -82,7 +82,6 @@ def test_build_inverted_index(small_dataset):
     #     assert expect_inverted_index[world] == inverted_index.word_in_docs_map[world]
 
 
-
 def test_dump_inverted_index():
     inverted_index = IIS.InvertedIndex()
 
