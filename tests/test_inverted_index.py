@@ -49,7 +49,7 @@ def test_load_documents_on_2_doc(small_dataset):
 
 
 def test_load_documents_on_incorrect_doc_struct(tmpdir):
-    docs = "1\tHello\n2\tworld\tworld\n"
+    docs = "1\tHello\n2\tworld\tworld\n2"
 
     file = tmpdir.join("tmp.txt")
     file.write(docs)
@@ -57,6 +57,14 @@ def test_load_documents_on_incorrect_doc_struct(tmpdir):
     with pytest.raises(ValueError):
         IIS.load_documents(file.strpath)
 
+
+def test_load_documents_without_content(tmpdir):
+    docs = "1\tHello\n2\tworld\tworld\n2\tAbracadabra"
+
+    file = tmpdir.join("tmp.txt")
+    file.write(docs)
+
+    IIS.load_documents(file.strpath)
 
 def test_build_inverted_index(small_dataset):
 
