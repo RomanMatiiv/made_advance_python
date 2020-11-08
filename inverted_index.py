@@ -122,8 +122,8 @@ def load_documents(filepath: str) -> list:
     Returns: массив с документами
              в формате
              [Document(doc_id, doc_name, doc_content)
-             ...,
-             Document(doc_id, doc_name, doc_content)
+              ...,
+              Document(doc_id, doc_name, doc_content)
              ]
     """
     documents = []
