@@ -119,7 +119,7 @@ def test_query_in_inverted_index():
                                    "hello": [1, 2],
                                    "covid": [3, 4]}
 
-    expect_docs = [1, 2, 4]
+    expect_docs = [1]
     docs = inverted_index.query(["hello", "word"])
 
     assert len(expect_docs) == len(docs)
