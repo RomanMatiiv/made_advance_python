@@ -66,6 +66,7 @@ def test_load_documents_without_content(tmpdir):
 
     IIS.load_documents(file.strpath)
 
+
 def test_build_inverted_index(small_dataset):
 
     expect_inverted_index = small_dataset["inverted_index"]
