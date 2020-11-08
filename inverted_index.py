@@ -131,7 +131,8 @@ def load_documents(filepath: str) -> list:
     with open(filepath) as fin:
         for row in fin.readlines():
             doc_id, text = (row.strip()
-                               .split('\t'))
+                               .split('\t', maxsplit=1))
+
             doc_id = int(doc_id)
             doc_name = text.split()[0]
             doc_content = text.replace(doc_name, "")
