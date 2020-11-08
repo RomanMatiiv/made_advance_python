@@ -186,12 +186,15 @@ def build_inverted_index(documents: list):
 #     inverted_index = InvertedIndex.load("/path/to/inverted.index")
 #     document_ids = inverted_index.query(["two", "words"])
 
-def build_callback():
-    print("build")
+def build_callback(arguments):
+    documents = load_documents(arguments.dataset)
+    inverted_index = build_inverted_index(documents)
+    inverted_index.dump(arguments.output)
 
 
-def query_callback():
-    print("query")
+def query_callback(arguments):
+    inverted_index = InvertedIndex.load(arguments.index)
+    document_ids = inverted_index.query(["two", "words"])
 
 
 def parse_arguments():
@@ -259,6 +262,4 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
 
-    args.callback()
-
-    print(args)
+    args.callback(args)
