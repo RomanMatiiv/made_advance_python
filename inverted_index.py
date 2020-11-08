@@ -195,7 +195,16 @@ def build_callback(arguments):
 
 def query_callback(arguments):
     inverted_index = InvertedIndex.load(arguments.index)
-    document_ids = inverted_index.query(["two", "words"])
+    document_ids = inverted_index.query(arguments.query)
+
+
+    # print(arguments.query)
+    # print(len(document_ids))
+    # print(document_ids, sep=",")
+
+    document_ids_str = [str(i) for i in document_ids]
+    result = ",".join(document_ids_str)
+    print(result)
 
 
 def parse_arguments():
