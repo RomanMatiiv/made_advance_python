@@ -4,8 +4,8 @@
 2. CLI интерфейс для работы с инвертированным индексом
 """
 import sys
-from argparse import FileType
 from argparse import ArgumentParser
+from argparse import FileType
 
 from storage_policy import JsonStoragePolicy
 
@@ -201,7 +201,7 @@ def query_callback(arguments):
     document_ids = inverted_index.query(arguments.query)
 
 
-    # print(arguments.query)
+    print(arguments.query)
     # print(len(document_ids))
     # print(document_ids, sep=",")
 
