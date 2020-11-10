@@ -243,31 +243,28 @@ def parse_arguments():
     query = subparsers.add_parser(name="query",
                                   description=query_description)
     query.set_defaults(callback=query_callback)
-
     query.add_argument("--index",
                        dest="index",
                        help="path to file with saved inverted index",
                        required=True,
                        type=str)
-    # TODO разобраться как сделать так чтоб один из них был обязательным
-    query.add_argument("--query-file-utf8",
-                       dest="query",
-                       help="file with query in utf8 coding",
-                       required=False,
-                       type=FileType('r'),
-                       default=sys.stdin)
-    query.add_argument("--query-file-cp1251",
-                       dest="query",
-                       help="file with query in cp1251 coding",
-                       required=False,
-                       type=FileType('r'),
-                       default=sys.stdin)
-    query.add_argument("--query",
-                       dest="query",
-                       help=None,
-                       required=False,
-                       type=str,
-                       nargs="+")
+
+    query_group = query.add_mutually_exclusive_group(required=True)
+    query_group.add_argument("--query-file-utf8",
+                             dest="query",
+                             help="file with query in utf8 coding",
+                             type=FileType('r'),
+                             default=sys.stdin)
+    query_group.add_argument("--query-file-cp1251",
+                             dest="query",
+                             help="file with query in cp1251 coding",
+                             type=FileType('r'),
+                             default=sys.stdin)
+    query_group.add_argument("--query",
+                             dest="query",
+                             help=None,
+                             type=str,
+                             nargs="+")
 
     args = args_parser.parse_args()
 
