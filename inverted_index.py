@@ -6,8 +6,12 @@
 import sys
 from argparse import ArgumentParser
 from argparse import FileType
+import logging
 
 from storage_policy import JsonStoragePolicy
+
+
+logger = logging.getLogger(__name__)
 
 
 class Document:
@@ -200,8 +204,7 @@ def query_callback(arguments):
     inverted_index = InvertedIndex.load(arguments.index)
     document_ids = inverted_index.query(arguments.query)
 
-
-    print(arguments.query)
+    logger.debug(arguments.query)
     # print(len(document_ids))
     # print(document_ids, sep=",")
 
@@ -271,7 +274,14 @@ def parse_arguments():
     return args
 
 
+def setup_logger():
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+    return None
+
+
 if __name__ == "__main__":
+    setup_logger()
     args = parse_arguments()
 
     args.callback(args)
