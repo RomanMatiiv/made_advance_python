@@ -5,6 +5,7 @@
 """
 import sys
 from argparse import ArgumentParser
+from argparse import ArgumentTypeError
 from argparse import FileType
 import logging
 from io import TextIOWrapper
@@ -109,6 +110,28 @@ class InvertedIndex:
         inverted_index.word_in_docs_map = storage_policy.load(filepath)
 
         return inverted_index
+
+
+class EncodedFileType(FileType):
+    def __call__(self, string):
+        # the special argument "-" means sys.std{in,out}
+        if string == '-':
+            if 'r' in self._mode:
+                stdin = TextIOWrapper(sys.stdin.buffer, self._encoding)
+                return stdin
+            elif 'w' in self._mode:
+                stdout = TextIOWrapper(sys.stdout.buffer, self._encoding)
+                return stdout
+            else:
+                msg = f'argument "-" with mode {self._mode}'
+                raise ValueError(msg)
+        # all other arguments are used as file names
+        try:
+            return open(string, self._mode, self._bufsize, self._encoding,
+                        self._errors)
+        except OSError as e:
+            message = f"can't open {string}: {e}"
+            raise ArgumentTypeError(message)
 
 
 def load_documents(filepath: str) -> list:
@@ -270,13 +293,13 @@ def parse_arguments():
     query_group.add_argument("--query-file-utf8",
                              dest="query_from_file",
                              help="file with query in utf8 coding",
-                             type=FileType('r', encoding="utf8"),
+                             type=EncodedFileType('r', encoding="utf8"),
                              default=TextIOWrapper(sys.stdin.buffer)
                              )
     query_group.add_argument("--query-file-cp1251",
                              dest="query_from_file",
                              help="file with query in cp1251 coding",
-                             type=FileType('r', encoding="cp1251"),
+                             type=EncodedFileType('r', encoding="cp1251"),
                              default=TextIOWrapper(sys.stdin.buffer)
                              )
 
