@@ -3,14 +3,15 @@
 1. Реализован класс с инвертированны индексом
 2. CLI интерфейс для работы с инвертированным индексом
 """
+import logging
 import sys
 from argparse import ArgumentParser
 from argparse import ArgumentTypeError
 from argparse import FileType
-import logging
 from io import TextIOWrapper
-from storage_policy import JsonStoragePolicy
+from typing import List
 
+from storage_policy import JsonStoragePolicy
 
 logger = logging.getLogger(__name__)
 
@@ -210,38 +211,56 @@ def build_inverted_index(documents: list):
     return inverted_index
 
 
-# def main():
-#     documents = load_documents("/path/to/dataset")
-#     inverted_index = build_inverted_index(documents)
-#     inverted_index.dump("/path/to/inverted.index")
-#     inverted_index = InvertedIndex.load("/path/to/inverted.index")
-#     document_ids = inverted_index.query(["two", "words"])
-
 def build_callback(arguments):
     documents = load_documents(arguments.dataset)
     inverted_index = build_inverted_index(documents)
     inverted_index.dump(arguments.output)
 
 
+def _extract_query(raw_queries: list) -> List[List]:
+    """
+    извлекает запросы из массивов
+
+    Пример:
+        intput: ["hello world", "what"]
+        output: [["hello", "world"],
+                 ["what"]]
+    Args:
+        raw_queries: массив с запросами
+             Пример: ["hello world", "what"]
+
+    Returns: массив с запросами
+    """
+    # TODO покрыть тестами
+    logger.debug(raw_queries)
+
+    queries = []
+    for query in raw_queries:
+        queries.append(query.strip().split())
+
+    return queries
+
+
 def query_callback(arguments):
     logger.debug(arguments)
 
     if arguments.query_from_stdin:
-        queries = arguments.query_from_stdin
-        logger.debug(queries)
+        raw_queries = arguments.query_from_stdin
+        queries = _extract_query(raw_queries)
     else:
-        queries = []
-        for query in arguments.query_from_file:
-            query = query.strip()
-            queries.append(query)
-        logger.debug(queries)
+        raw_queries = arguments.query_from_file.readlines()
+        queries = _extract_query(raw_queries)
 
     inverted_index = InvertedIndex.load(arguments.index)
-    document_ids = inverted_index.query(queries)
 
-    document_ids_str = [str(i) for i in document_ids]
-    result = ",".join(document_ids_str)
-    print(result)
+    for query in queries:
+        logger.debug(query)
+
+        document_ids = inverted_index.query(query)
+
+        document_ids_str = [str(i) for i in document_ids]
+        result = ",".join(document_ids_str)
+        print(result)
 
 
 def parse_arguments():
