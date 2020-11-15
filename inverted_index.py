@@ -7,7 +7,7 @@ import sys
 from argparse import ArgumentParser
 from argparse import FileType
 import logging
-
+from io import TextIOWrapper
 from storage_policy import JsonStoragePolicy
 
 
@@ -201,10 +201,20 @@ def build_callback(arguments):
 
 
 def query_callback(arguments):
-    inverted_index = InvertedIndex.load(arguments.index)
-    document_ids = inverted_index.query(arguments.query)
+    logger.debug(arguments)
 
-    logger.debug(arguments.query)
+    if arguments.query_from_stdin:
+        queries = arguments.query_from_stdin
+        logger.debug(queries)
+    else:
+        queries = []
+        for query in arguments.query_from_file:
+            query = query.strip()
+            queries.append(query)
+        logger.debug(queries)
+
+    inverted_index = InvertedIndex.load(arguments.index)
+    document_ids = inverted_index.query(queries)
 
     document_ids_str = [str(i) for i in document_ids]
     result = ",".join(document_ids_str)
@@ -250,22 +260,25 @@ def parse_arguments():
                        required=True,
                        type=str)
 
-    query_group = query.add_mutually_exclusive_group(required=True)
-    query_group.add_argument("--query-file-utf8",
-                             dest="query",
-                             help="file with query in utf8 coding",
-                             type=FileType('r'),
-                             default=sys.stdin)
-    query_group.add_argument("--query-file-cp1251",
-                             dest="query",
-                             help="file with query in cp1251 coding",
-                             type=FileType('r'),
-                             default=sys.stdin)
+    query_group = query.add_mutually_exclusive_group()
     query_group.add_argument("--query",
-                             dest="query",
+                             dest="query_from_stdin",
                              help=None,
-                             type=str,
-                             nargs="+")
+                             required=False,
+                             nargs="+"
+                             )
+    query_group.add_argument("--query-file-utf8",
+                             dest="query_from_file",
+                             help="file with query in utf8 coding",
+                             type=FileType('r', encoding="utf8"),
+                             default=TextIOWrapper(sys.stdin.buffer)
+                             )
+    query_group.add_argument("--query-file-cp1251",
+                             dest="query_from_file",
+                             help="file with query in cp1251 coding",
+                             type=FileType('r', encoding="cp1251"),
+                             default=TextIOWrapper(sys.stdin.buffer)
+                             )
 
     args = args_parser.parse_args()
 
