@@ -1,4 +1,5 @@
 import os
+import io
 
 import pytest
 
@@ -139,3 +140,24 @@ def test_query_not_in_inverted_index():
     docs = inverted_index.query(["ABS", "DDDDD"])
 
     assert len(expect_docs) == len(docs)
+
+
+@pytest.mark.skip
+def test_encoded_file_type_with_stdin_cp1251():
+
+    expect_encoding = "cp1251"
+
+    file_type = IIS.EncodedFileType("r", encoding=expect_encoding)
+    real_encoding = file_type("-").encoding
+
+    assert expect_encoding == real_encoding
+
+
+@pytest.mark.skip
+def test_encoded_file_type_with_stdin_utf8():
+    expect_encoding = "UTF-8"
+
+    file_type = IIS.EncodedFileType("r", encoding=expect_encoding)
+    real_encoding = file_type("-").encoding
+
+    assert expect_encoding == real_encoding
