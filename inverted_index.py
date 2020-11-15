@@ -77,7 +77,7 @@ class InvertedIndex:
 
         return union
 
-    def dump(self, filepath: str, storage_policy=JsonStoragePolicy):
+    def dump(self, filepath: str, storage_policy=JsonStoragePolicy()):
         """
         Сохраняет словарь с инвертированным индексом
 
@@ -91,7 +91,7 @@ class InvertedIndex:
         storage_policy.dump(self.word_in_docs_map, filepath)
 
     @classmethod
-    def load(cls, filepath: str, storage_policy=JsonStoragePolicy):
+    def load(cls, filepath: str, storage_policy=JsonStoragePolicy()):
         """
         Загружает объект инвертированнного индекса с диска
 
