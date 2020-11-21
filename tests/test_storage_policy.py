@@ -13,7 +13,8 @@ def sample_inverted_index(tmpdir):
                       "world": [1],
                       "I": [3, 4],
                       "am": [2],
-                      "human": [2, 3]}
+                      "human": [2, 3],
+                      "россия": [1, 2, 3, 4]}
     return inverted_index
 
 
@@ -50,10 +51,11 @@ def test_zlib_storage_policy(tmpdir, sample_inverted_index):
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
 
-    storage_policy = ZlibStoragePolicy(encoding="utf8")
+    storage_policy = ZlibStoragePolicy(encoding="cp1251")
     storage_policy.dump(expect, path_to_dump)
 
     storage_policy = ZlibStoragePolicy(encoding="utf8")
+
     real = storage_policy.load(path_to_dump)
 
     assert expect == real
@@ -82,7 +84,15 @@ def test_zlib_storage_policy_raise_compress_level(tmpdir, sample_inverted_index)
         storage_policy.dump(sample_inverted_index, path_to_dump, level=10)
 
 
-# def test_struct_storage_policy(sample_inverted_index):
-#     expect_inverted_index = sample_inverted_index
-#
-#     storage_policy = StructStoragePolicy
+def test_struct_storage_policy(tmpdir, sample_inverted_index):
+    expect = sample_inverted_index
+
+    path_to_dump = tmpdir.join("dump_tmp").strpath
+
+    storage_policy = StructStoragePolicy(encoding="utf8")
+    storage_policy.dump(expect, path_to_dump)
+
+    storage_policy = StructStoragePolicy(encoding="utf8")
+    real = storage_policy.load(path_to_dump)
+
+    assert expect == real

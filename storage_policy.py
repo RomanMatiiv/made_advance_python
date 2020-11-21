@@ -75,15 +75,15 @@ class ZlibStoragePolicy(StoragePolicy):
 
 
 class StructStoragePolicy(StoragePolicy):
-    def __init__(self, coding):
-        self.coding = coding
+    def __init__(self, encoding):
+        self.encoding = encoding
 
     def dump(self, word_to_docs_mapping, filepath: str) -> None:
         raise NotImplemented
 
     def load(self, filepath: str) -> dict:
         raise NotImplemented
-
+#
 # transform = {'1':"s", # строка
 #              '2':"H" # unsigned short
 #              }
