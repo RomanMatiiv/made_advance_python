@@ -1,5 +1,4 @@
 import os
-import io
 
 import pytest
 
@@ -35,6 +34,7 @@ def small_dataset(tmpdir) -> dict:
 
 
 def test_load_documents_on_doesnt_exist_file():
+    """Тест на загрузку несуществующего документа"""
     path_to_doesnt_exist_file = "fake/path/to/dataset.txt"
 
     with pytest.raises(FileNotFoundError):
@@ -50,6 +50,7 @@ def test_load_documents_on_2_doc(small_dataset):
 
 
 def test_load_documents_on_incorrect_doc_struct(tmpdir):
+    """Тест на загрузку документа с неправильной структурой"""
     docs = "1\tHello\n2\tworld\tworld\n2"
 
     file = tmpdir.join("tmp.txt")
@@ -60,6 +61,7 @@ def test_load_documents_on_incorrect_doc_struct(tmpdir):
 
 
 def test_load_documents_without_content(tmpdir):
+    """Тест на загрузку документа с неправильной структурой"""
     docs = "1\tHello\n2\tworld\tworld\n2\tAbracadabra"
 
     file = tmpdir.join("tmp.txt")
@@ -69,7 +71,6 @@ def test_load_documents_without_content(tmpdir):
 
 
 def test_build_inverted_index(small_dataset):
-
     expect_inverted_index = small_dataset["inverted_index"]
 
     docs = small_dataset["list_docs"]
@@ -77,11 +78,6 @@ def test_build_inverted_index(small_dataset):
     inverted_index = IIS.build_inverted_index(docs)
 
     assert expect_inverted_index == inverted_index.word_in_docs_map
-
-    # assert len(expect_inverted_index) == len(inverted_index.word_in_docs_map)
-    #
-    # for world in expect_inverted_index.keys():
-    #     assert expect_inverted_index[world] == inverted_index.word_in_docs_map[world]
 
 
 def test_dump_inverted_index():
@@ -140,24 +136,3 @@ def test_query_not_in_inverted_index():
     docs = inverted_index.query(["ABS", "DDDDD"])
 
     assert len(expect_docs) == len(docs)
-
-
-@pytest.mark.skip
-def test_encoded_file_type_with_stdin_cp1251():
-
-    expect_encoding = "cp1251"
-
-    file_type = IIS.EncodedFileType("r", encoding=expect_encoding)
-    real_encoding = file_type("-").encoding
-
-    assert expect_encoding == real_encoding
-
-
-@pytest.mark.skip
-def test_encoded_file_type_with_stdin_utf8():
-    expect_encoding = "UTF-8"
-
-    file_type = IIS.EncodedFileType("r", encoding=expect_encoding)
-    real_encoding = file_type("-").encoding
-
-    assert expect_encoding == real_encoding

@@ -86,10 +86,9 @@ class StructStoragePolicy(StoragePolicy):
                             "s": "1",  # строка
                             "H": "2"  # unsigned short
                             }
+        self.meta_info_mask = "2I"
 
     def dump(self, word_to_docs_mapping, filepath: str) -> None:
-        meta_info_mask = "2I"  # TODO вынести в __init__
-
         with open(filepath, "wb") as f:
             for word in word_to_docs_mapping:
                 # маска для упаковки данных
@@ -103,7 +102,7 @@ class StructStoragePolicy(StoragePolicy):
                 meta_info_2 = int(info_mask.split()[1].replace("H", self.type_to_int["H"]))
 
                 # запись метаинформации
-                meta_info = struct.pack(meta_info_mask, meta_info_1, meta_info_2)
+                meta_info = struct.pack(self.meta_info_mask, meta_info_1, meta_info_2)
                 f.write(meta_info)
 
                 # запись информации
@@ -117,14 +116,13 @@ class StructStoragePolicy(StoragePolicy):
     def load(self, filepath: str) -> dict:
         result = {}
 
-        meta_info_mask = "2I"  # TODO вынести в __init__
-        meta_info_size = struct.calcsize(meta_info_mask)
+        meta_info_size = struct.calcsize(self.meta_info_mask)
 
         with open(filepath, "rb") as f:
             meta_info_bytes = f.read(meta_info_size)
 
             while meta_info_bytes:
-                meta_info = struct.unpack(meta_info_mask, meta_info_bytes)
+                meta_info = struct.unpack(self.meta_info_mask, meta_info_bytes)
 
                 word_mask = str(meta_info[0])
                 doc_id_mask = str(meta_info[1])
