@@ -86,7 +86,8 @@ def test_dump_inverted_index():
     inverted_index.word_in_docs_map = {"hello": [1, 2],
                                    "world": [2]}
 
-    inverted_index.dump("tmp.json")
+    inverted_index.dump("tmp.json",
+                        storage_policy=IIS.StructStoragePolicy(encoding="utf8"))
 
     os.remove("tmp.json")
 
@@ -100,10 +101,12 @@ def test_dump_and_load_inverted_index():
 
     inverted_index.word_in_docs_map = expected
 
-    inverted_index.dump("tmp.json")
+    inverted_index.dump("tmp.json",
+                        storage_policy=IIS.StructStoragePolicy(encoding="utf8"))
     del inverted_index
 
-    inverted_index = IIS.InvertedIndex.load("tmp.json")
+    inverted_index = IIS.InvertedIndex.load("tmp.json",
+                                            storage_policy=IIS.StructStoragePolicy(encoding="utf8"))
 
     os.remove("tmp.json")
 

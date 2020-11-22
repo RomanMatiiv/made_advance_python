@@ -11,7 +11,7 @@ from argparse import FileType
 from io import TextIOWrapper
 from typing import List
 
-from storage_policy import JsonStoragePolicy
+from storage_policy import StructStoragePolicy
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ class InvertedIndex:
 
         return union
 
-    def dump(self, filepath: str, storage_policy=JsonStoragePolicy()):
+    def dump(self, filepath: str, storage_policy):
         """
         Сохраняет словарь с инвертированным индексом
 
@@ -93,7 +93,7 @@ class InvertedIndex:
         storage_policy.dump(self.word_in_docs_map, filepath)
 
     @classmethod
-    def load(cls, filepath: str, storage_policy=JsonStoragePolicy()):
+    def load(cls, filepath: str, storage_policy):
         """
         Загружает объект инвертированнного индекса с диска
 
@@ -214,7 +214,8 @@ def build_inverted_index(documents: list):
 def build_callback(arguments):
     documents = load_documents(arguments.dataset)
     inverted_index = build_inverted_index(documents)
-    inverted_index.dump(arguments.output)
+    inverted_index.dump(arguments.output,
+                        storage_policy=StructStoragePolicy(encoding="utf8"))
 
 
 def _extract_query(raw_queries: list) -> List[List]:
@@ -251,7 +252,8 @@ def query_callback(arguments):
         raw_queries = arguments.query_from_file.readlines()
         queries = _extract_query(raw_queries)
 
-    inverted_index = InvertedIndex.load(arguments.index)
+    inverted_index = InvertedIndex.load(arguments.index,
+                                        storage_policy=StructStoragePolicy(encoding="utf8"))
 
     for query in queries:
         logger.debug(query)
