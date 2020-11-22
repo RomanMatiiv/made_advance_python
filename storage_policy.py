@@ -11,7 +11,9 @@ import struct
 
 
 class StoragePolicy(ABC):
-
+    """
+    Интерфейс для сохранения питоновского словаря на диск
+    """
     @abstractmethod
     def dump(self, word_to_docs_mapping, filepath: str) -> None:
         pass
@@ -22,6 +24,9 @@ class StoragePolicy(ABC):
 
 
 class JsonStoragePolicy(StoragePolicy):
+    """
+    Сохранение питоновского словаря на диск
+    """
     def dump(self, python_dict: dict, file_path: str):
         with open(file_path, "w") as file:
             json.dump(python_dict, file)
@@ -36,6 +41,9 @@ class JsonStoragePolicy(StoragePolicy):
 
 
 class PklStoragePolicy(StoragePolicy):
+    """
+    Сохранение питоновского словаря на диск
+    """
     def dump(self, word_to_docs_mapping, filepath: str):
         with open(filepath, "wb") as f:
             pickle.dump(word_to_docs_mapping, f)
@@ -50,7 +58,16 @@ class PklStoragePolicy(StoragePolicy):
 
 
 class ZlibStoragePolicy(StoragePolicy):
+    """
+    Сохранение питоновского словаря с помощью библиотеки zlib
+    """
     def __init__(self, encoding, level=6):
+        """
+
+        Args:
+            encoding: кодировка в которой находятся данные
+            level: степень сжатия (от 0 до 9)
+        """
         self.encoding = encoding
         self.level = level
 
@@ -75,7 +92,15 @@ class ZlibStoragePolicy(StoragePolicy):
 
 
 class StructStoragePolicy(StoragePolicy):
+    """
+    Сохранение питоновского словаря на диск
+    """
     def __init__(self, encoding):
+        """
+
+        Args:
+            encoding: кодировка в которой находятся данные
+        """
         self.encoding = encoding
 
         self.int_to_type = {
