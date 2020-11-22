@@ -7,6 +7,7 @@ from storage_policy import PklStoragePolicy
 from storage_policy import ZlibStoragePolicy
 from storage_policy import StructStoragePolicy
 
+
 @pytest.fixture()
 def sample_inverted_index(tmpdir):
     inverted_index = {"россия": [1, 2, 3, 4],
@@ -20,6 +21,7 @@ def sample_inverted_index(tmpdir):
 
 
 def test_json_storage_policy(tmpdir, sample_inverted_index):
+    """Тестирование основного функционала"""
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
@@ -34,6 +36,7 @@ def test_json_storage_policy(tmpdir, sample_inverted_index):
 
 
 def test_pkl_storage_policy(tmpdir, sample_inverted_index):
+    """Тестирование основного функционала"""
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
@@ -48,6 +51,7 @@ def test_pkl_storage_policy(tmpdir, sample_inverted_index):
 
 
 def test_zlib_storage_policy(tmpdir, sample_inverted_index):
+    """Тестирование основного функционала"""
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
@@ -63,6 +67,7 @@ def test_zlib_storage_policy(tmpdir, sample_inverted_index):
 
 
 def test_zlib_storage_policy_compress_level(tmpdir, sample_inverted_index):
+    """Тестирование степени сжатия"""
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
@@ -77,6 +82,7 @@ def test_zlib_storage_policy_compress_level(tmpdir, sample_inverted_index):
 
 
 def test_zlib_storage_policy_raise_compress_level(tmpdir, sample_inverted_index):
+    """Тестирование недопустимого уровня сжатия"""
     path_to_dump = tmpdir.join("dump_tmp").strpath
 
     storage_policy = ZlibStoragePolicy(encoding="utf8", level=10)
@@ -86,6 +92,7 @@ def test_zlib_storage_policy_raise_compress_level(tmpdir, sample_inverted_index)
 
 
 def test_struct_storage_policy_utf8(tmpdir, sample_inverted_index):
+    """Тестирование сжатия в кодировке utf8"""
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
@@ -100,6 +107,7 @@ def test_struct_storage_policy_utf8(tmpdir, sample_inverted_index):
 
 
 def test_struct_storage_policy_cp1251(tmpdir, sample_inverted_index):
+    """Тестирование сжатия в кодировке cp1251"""
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
