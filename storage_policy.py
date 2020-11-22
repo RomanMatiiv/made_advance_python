@@ -12,7 +12,7 @@ import struct
 
 class StoragePolicy(ABC):
     """
-    Интерфейс для сохранения питоновского словаря на диск
+    Интерфейс для сохранения и извлечение инвертированного индекса на диск
     """
     @abstractmethod
     def dump(self, word_to_docs_mapping, filepath: str) -> None:
@@ -25,7 +25,7 @@ class StoragePolicy(ABC):
 
 class JsonStoragePolicy(StoragePolicy):
     """
-    Сохранение питоновского словаря на диск
+    Сохранение и извлечение инвертированного индекса на диск
     """
     def dump(self, python_dict: dict, file_path: str):
         with open(file_path, "w") as file:
@@ -42,7 +42,7 @@ class JsonStoragePolicy(StoragePolicy):
 
 class PklStoragePolicy(StoragePolicy):
     """
-    Сохранение питоновского словаря на диск
+    Сохранение и извлечение инвертированного индекса на диск
     """
     def dump(self, word_to_docs_mapping, filepath: str):
         with open(filepath, "wb") as f:
@@ -59,7 +59,7 @@ class PklStoragePolicy(StoragePolicy):
 
 class ZlibStoragePolicy(StoragePolicy):
     """
-    Сохранение питоновского словаря с помощью библиотеки zlib
+    Сохранение и извлечение инвертированного индекса на диск
     """
     def __init__(self, encoding, level=6):
         """
@@ -93,11 +93,10 @@ class ZlibStoragePolicy(StoragePolicy):
 
 class StructStoragePolicy(StoragePolicy):
     """
-    Сохранение питоновского словаря на диск
+    Сохранение и извлечение инвертированного индекса на диск
     """
     def __init__(self, encoding):
         """
-
         Args:
             encoding: кодировка в которой находятся данные
         """
@@ -114,31 +113,98 @@ class StructStoragePolicy(StoragePolicy):
         self.meta_info_mask = "2I"
 
     def dump(self, word_to_docs_mapping, filepath: str) -> None:
+        """
+        Сохранение инвертированного индекса на жесткий диск
+
+        Args:
+            word_to_docs_mapping: инвертированный индекс
+            filepath: путь до файла куда сохранять
+
+        Returns: None
+
+        """
         with open(filepath, "wb") as f:
             for word in word_to_docs_mapping:
-                # маска для упаковки данных
-                letter_count = len(word.encode(self.encoding))
-                doc_id_count = len(word_to_docs_mapping[word])
-                info_mask = f"{letter_count}s {doc_id_count}H"
 
-                # преобразование метаинформации
-                # "10s 3H" -> [101, 32]
-                meta_info_1 = int(info_mask.split()[0].replace("s", self.type_to_int["s"]))
-                meta_info_2 = int(info_mask.split()[1].replace("H", self.type_to_int["H"]))
+                info_mask = self._get_info_mask(word, word_to_docs_mapping[word])
+
+                meta_info = self._coding_mask(info_mask)
 
                 # запись метаинформации
-                meta_info = struct.pack(self.meta_info_mask, meta_info_1, meta_info_2)
-                f.write(meta_info)
+                raw_meta_info = struct.pack(self.meta_info_mask,
+                                        meta_info[0],
+                                        meta_info[1])
+                f.write(raw_meta_info)
 
                 # запись информации
-                info = struct.pack(info_mask,
-                                   word.encode(self.encoding),
-                                   *word_to_docs_mapping[word])
-                f.write(info)
+                raw_info = struct.pack(info_mask,
+                                       word.encode(self.encoding),
+                                       *word_to_docs_mapping[word])
+                f.write(raw_info)
 
         return None
 
+    def _coding_mask(self, info_mask: str) -> list:
+        """
+        Преобразование маски для последующего ее сохранения
+
+        Делается это для того, чтобы данные обратно распоковать
+        нужна будет таже самая маска, что и использоваолась при их упаковке
+        но тк для данных маски будут разные то их все нужно будет хранить
+
+        Но но весли перевести все маски в числовой формат, то саму маску уже
+        можно закодировать 2 числами
+        (те получается что маска для маски универсальна)
+        Подробнее см пример
+        Args:
+            info_mask: маска для сохранеия информации модулем struct
+
+        Returns: массив из 2 чисел
+
+        Пример: "10s 3H" -> [101, 32]
+        """
+
+        word_mask = info_mask.split()[0]
+        word_mask_struct_type = word_mask[-1]
+        word_mask = word_mask.replace(word_mask_struct_type,
+                                      self.type_to_int[word_mask_struct_type])
+        word_mask = int(word_mask)
+
+        doc_id_mask = info_mask.split()[1]
+        doc_id_mask_struct_type = doc_id_mask[-1]
+        doc_id_mask = doc_id_mask.replace(doc_id_mask_struct_type,
+                                          self.type_to_int[doc_id_mask_struct_type])
+        doc_id_mask = int(doc_id_mask)
+
+        return [word_mask, doc_id_mask]
+
+    def _get_info_mask(self, word: str, documents: list):
+        """
+        Получение маски для упаковки данных модулем struct
+
+        Args:
+            word: слово, которое хотим сохранить
+            documents: документы, в которых это слово встречается
+
+        Returns: маску, с помощью которой пару (word, documents)
+        можно будет сохранить в бинарном формате модулем struct
+        """
+        letter_count = len(word.encode(self.encoding))
+        doc_id_count = len(documents)
+        info_mask = f"{letter_count}s {doc_id_count}H"
+
+        return info_mask
+
     def load(self, filepath: str) -> dict:
+        """
+        Извлечение инвертированного индекса с жесткого диска
+
+        Args:
+            filepath: путь до сохраненного инвертированного индекса
+
+        Returns: инвертированный индекс
+
+        """
         result = {}
 
         meta_info_size = struct.calcsize(self.meta_info_mask)
@@ -149,22 +215,47 @@ class StructStoragePolicy(StoragePolicy):
             while meta_info_bytes:
                 meta_info = struct.unpack(self.meta_info_mask, meta_info_bytes)
 
-                word_mask = str(meta_info[0])
-                doc_id_mask = str(meta_info[1])
-
-                word_mask = word_mask[:-1] + self.int_to_type[word_mask[-1]]
-                doc_id_mask = doc_id_mask[:-1] + self.int_to_type[doc_id_mask[-1]]
-                info_mask = word_mask + " " + doc_id_mask
+                info_mask = self._decoding_mask(meta_info)
 
                 info_size = struct.calcsize(info_mask)
                 info_bytes = f.read(info_size)
                 info = struct.unpack(info_mask, info_bytes)
 
-                info_word = info[0].decode(self.encoding)
-                info_docid = list(info[1:])
+                word = info[0].decode(self.encoding)
+                documents = list(info[1:])
 
-                result[info_word] = info_docid
+                result[word] = documents
 
                 meta_info_bytes = f.read(meta_info_size)
 
         return result
+
+    def _decoding_mask(self, meta_info: list) -> str:
+        """
+        Раскодирование маски
+
+        Которая нужно чтоб данные извлечь и раскодировать
+
+        Тк помимо данных нужно было и маску хранить
+        то маска тоже кодировалась числами и уже числа записывались
+        Здесь идет преобразование из чисел в маску
+        Args:
+            meta_info: маска закодированном формате
+
+        Returns: маска для извлечения и раскодировки данныъ
+
+        Пример: [101, 52] -> "10s 5H"
+        """
+
+        # 101 -> "10s"
+        word_mask = str(meta_info[0])
+        word_mask_struct_type = self.int_to_type[word_mask[-1]]
+        word_mask = word_mask[:-1] + word_mask_struct_type
+
+        # 52 -> "5H"
+        doc_id_mask = str(meta_info[1])
+        doc_id_mask_struct_type = self.int_to_type[doc_id_mask[-1]]
+        doc_id_mask = doc_id_mask[:-1] + doc_id_mask_struct_type
+
+        info_mask = word_mask + " " + doc_id_mask
+        return info_mask
