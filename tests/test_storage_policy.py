@@ -9,12 +9,13 @@ from storage_policy import StructStoragePolicy
 
 @pytest.fixture()
 def sample_inverted_index(tmpdir):
-    inverted_index = {"hello": [1, 4],
+    inverted_index = {"россия": [1, 2, 3, 4],
+                      "hello": [1, 4],
                       "world": [1],
                       "I": [3, 4],
                       "am": [2],
                       "human": [2, 3],
-                      "россия": [1, 2, 3, 4]}
+                      }
     return inverted_index
 
 
@@ -84,7 +85,7 @@ def test_zlib_storage_policy_raise_compress_level(tmpdir, sample_inverted_index)
         storage_policy.dump(sample_inverted_index, path_to_dump, level=10)
 
 
-def test_struct_storage_policy(tmpdir, sample_inverted_index):
+def test_struct_storage_policy_utf8(tmpdir, sample_inverted_index):
     expect = sample_inverted_index
 
     path_to_dump = tmpdir.join("dump_tmp").strpath
@@ -93,6 +94,20 @@ def test_struct_storage_policy(tmpdir, sample_inverted_index):
     storage_policy.dump(expect, path_to_dump)
 
     storage_policy = StructStoragePolicy(encoding="utf8")
+    real = storage_policy.load(path_to_dump)
+
+    assert expect == real
+
+
+def test_struct_storage_policy_cp1251(tmpdir, sample_inverted_index):
+    expect = sample_inverted_index
+
+    path_to_dump = tmpdir.join("dump_tmp").strpath
+
+    storage_policy = StructStoragePolicy(encoding="cp1251")
+    storage_policy.dump(expect, path_to_dump)
+
+    storage_policy = StructStoragePolicy(encoding="cp1251")
     real = storage_policy.load(path_to_dump)
 
     assert expect == real
