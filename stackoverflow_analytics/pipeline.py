@@ -1,4 +1,5 @@
 import logging
+from typing import List
 from xml.etree import cElementTree as ET
 
 from post import Post
@@ -12,7 +13,17 @@ class Pipeline:
         raise NotImplementedError
 
     @staticmethod
-    def read_posts(filepath):
+    def read_posts(filepath) -> List[Post]:
+        """
+        Чтение постов
+
+        из файла, где каждый пост это строка в формате xml
+
+        Args:
+            filepath: путь до файла с постами в формате xml
+
+        Returns: массив с постами
+        """
         posts = []
 
         logger.debug("path to file with posts: {filepath}")
