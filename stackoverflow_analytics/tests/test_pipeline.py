@@ -2,6 +2,7 @@ import pytest
 
 from pipeline import Pipeline
 
+
 @pytest.fixture(scope='function')
 def stackoverflow_posts(tmpdir):
     posts = [{"xml": '<row PostTypeId="1" CreationDate="2019-01-15T20:31:15.640" Score="10" Title="Is SEO better better better done with repetition?" />',
@@ -30,4 +31,15 @@ def stackoverflow_posts(tmpdir):
     return {"posts": posts,
             "posts_filepath": post_tmp_file.strpath}
 
-    return post_tmp_file.strpath
+
+def test_read_post(stackoverflow_posts):
+
+    posts = Pipeline.read_posts(stackoverflow_posts["posts_filepath"])
+
+    assert len(stackoverflow_posts["posts"]) == len(posts)
+
+    for expect_post, post in zip(stackoverflow_posts["posts"], posts):
+        assert expect_post["PostTypeId"] == post.post_type_id
+        assert expect_post["CreationDate"] == post.creation_date
+        assert expect_post["Score"] == post.score
+        assert expect_post["Title"] == post.title
