@@ -11,19 +11,19 @@ class Pipeline:
     def __init__(self):
         raise NotImplementedError
 
-    def read_posts(self, filepath):
+    @staticmethod
+    def read_posts(filepath):
         posts = []
 
         logger.debug("path to file with posts: {filepath}")
 
         with open(filepath, "r") as f:
             for raw_post in f.readlines():
-                root = ET.fromstring(raw_post)
-                for page in list(root):
-                    title = page.find('Title').text
-                    score = page.find('Score').text
-                    creation_date = page.find('CreationDate').text
-                    post_type_id = page.find('PostTypeId').text
+                raw_post = ET.fromstring(raw_post)
+                title = raw_post.attrib['Title']
+                score = int(raw_post.attrib['Score'])
+                creation_date = raw_post.attrib['CreationDate']
+                post_type_id = int(raw_post.attrib['PostTypeId'])
 
                 post = Post(title, score, creation_date, post_type_id)
                 posts.append(post)
