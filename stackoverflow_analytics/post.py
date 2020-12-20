@@ -1,3 +1,8 @@
+import logging
+
+
+logger = logging.getLogger("post")
+
 
 class Post:
     def __init__(self, title, score, creation_date, post_type_id=1):

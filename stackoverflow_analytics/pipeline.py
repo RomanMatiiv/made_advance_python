@@ -1,6 +1,10 @@
+import logging
 from xml.etree import cElementTree as ET
 
 from post import Post
+
+
+logger = logging.getLogger("pipeline")
 
 
 class Pipeline:
@@ -9,6 +13,8 @@ class Pipeline:
 
     def read_posts(self, filepath):
         posts = []
+
+        logger.debug("path to file with posts: {filepath}")
 
         with open(filepath, "r") as f:
             for raw_post in f.readlines():
