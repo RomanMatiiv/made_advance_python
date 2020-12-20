@@ -3,12 +3,13 @@ from typing import List
 from xml.etree import cElementTree as ET
 
 from post import Post
+from post import Word
 
 
 logger = logging.getLogger("pipeline")
 
 
-class Pipeline:
+class AnalyticsPipeline:
     def __init__(self):
         raise NotImplementedError
 
@@ -17,7 +18,7 @@ class Pipeline:
         """
         Чтение постов
 
-        из файла, где каждый пост это строка в формате xml
+        из файла, где каждый пост это xmlline
 
         Args:
             filepath: путь до файла с постами в формате xml
@@ -41,3 +42,14 @@ class Pipeline:
 
         return posts
 
+    def extract_all_words_from_posts(self, posts) -> List[Word]:
+        raise NotImplementedError
+
+    def get_words_between_date(self, words, start, end) -> List[Word]:
+        raise NotImplementedError
+
+    def aggregate_same_words(self, words) -> List[Word]:
+        raise NotImplementedError
+
+    def get_top_n_words(self, words, top_n) -> List[Word]:
+        raise NotImplementedError

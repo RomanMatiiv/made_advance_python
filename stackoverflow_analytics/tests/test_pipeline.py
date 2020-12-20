@@ -1,6 +1,6 @@
 import pytest
 
-from pipeline import Pipeline
+from analyticspipeline import AnalyticsPipeline
 
 
 @pytest.fixture(scope='function')
@@ -34,7 +34,7 @@ def stackoverflow_posts(tmpdir):
 
 def test_read_post(stackoverflow_posts):
 
-    posts = Pipeline.read_posts(stackoverflow_posts["posts_filepath"])
+    posts = AnalyticsPipeline.read_posts(stackoverflow_posts["posts_filepath"])
 
     assert len(stackoverflow_posts["posts"]) == len(posts)
 

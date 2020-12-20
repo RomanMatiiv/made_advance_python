@@ -12,8 +12,10 @@ class Post:
         self.post_type_id = post_type_id
 
 
-
 class Word:
-    def __init__(self, word, score):
+    def __init__(self, word, score, date):
         self.word = word
         self.score = score
+        self.date = date
+
+        # TODO добавить операторы для сравнения по году
