@@ -1,6 +1,6 @@
 import pytest
 
-from analyticspipeline import AnalyticsPipeline
+from analyticspipeline import StackOverFlowAnalyticsPipeline
 
 
 @pytest.fixture(scope='function')
@@ -34,11 +34,13 @@ def stackoverflow_posts(tmpdir):
 
 def test_read_post(stackoverflow_posts):
 
-    posts = AnalyticsPipeline.read_posts(stackoverflow_posts["posts_filepath"])
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
 
-    assert len(stackoverflow_posts["posts"]) == len(posts)
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
 
-    for expect_post, post in zip(stackoverflow_posts["posts"], posts):
+    assert len(stackoverflow_posts["posts"]) == len(pipeline_sof.posts)
+
+    for expect_post, post in zip(stackoverflow_posts["posts"], pipeline_sof.posts):
         assert expect_post["PostTypeId"] == post.post_type_id
         assert expect_post["CreationDate"] == post.creation_date
         assert expect_post["Score"] == post.score

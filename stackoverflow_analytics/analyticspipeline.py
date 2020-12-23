@@ -9,12 +9,13 @@ from post import Word
 logger = logging.getLogger("pipeline")
 
 
-class AnalyticsPipeline:
+class StackOverFlowAnalyticsPipeline:
     def __init__(self):
-        raise NotImplementedError
+        self.posts = None
+        self.all_words = None
+        self.aggregated_all_words = None
 
-    @staticmethod
-    def read_posts(filepath) -> List[Post]:
+    def read_posts(self, filepath) -> None:
         """
         Чтение постов
 
@@ -23,9 +24,12 @@ class AnalyticsPipeline:
         Args:
             filepath: путь до файла с постами в формате xml
 
-        Returns: массив с постами
+        Returns: None
         """
-        posts = []
+        if self.posts is not None:
+            logger.info("old post removed")
+
+        self.posts = []
 
         logger.debug("path to file with posts: {filepath}")
 
@@ -38,7 +42,9 @@ class AnalyticsPipeline:
                 post_type_id = int(raw_post.attrib['PostTypeId'])
 
                 post = Post(title, score, creation_date, post_type_id)
-                posts.append(post)
+                self.posts.append(post)
+
+        return None
 
         return posts
 
