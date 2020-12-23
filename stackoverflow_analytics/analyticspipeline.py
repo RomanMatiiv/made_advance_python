@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import List
 from xml.etree import cElementTree as ET
 
@@ -46,10 +47,17 @@ class StackOverFlowAnalyticsPipeline:
 
         return None
 
-        return posts
+    def extract_all_words_from_posts(self, stop_words=None):
+        if self.posts is None:
+            raise ValueError
 
-    def extract_all_words_from_posts(self, posts) -> List[Word]:
-        raise NotImplementedError
+        self.all_words = []
+
+        for post in self.posts:
+            words = re.findall("\w+", post.title.lower())
+            words = self._filtering_stop_words(words, stop_words)
+
+            raise NotImplementedError
 
     def get_words_between_date(self, words, start, end) -> List[Word]:
         raise NotImplementedError
@@ -59,3 +67,13 @@ class StackOverFlowAnalyticsPipeline:
 
     def get_top_n_words(self, words, top_n) -> List[Word]:
         raise NotImplementedError
+
+    def _filtering_stop_words(self, words, stop_words: List[str]) -> List[str]:
+        if stop_words is None:
+            return words
+        else:
+            for word in words:
+                if word in stop_words:
+                    words.remove(word)
+
+            return words

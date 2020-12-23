@@ -9,19 +9,22 @@ def stackoverflow_posts(tmpdir):
               "PostTypeId": 1,
               "CreationDate": "2019-01-15T20:31:15.640",
               "Score": 10,
-              "Title": "Is SEO better better better done with repetition?"},
+              "Title": "Is SEO better better better done with repetition?",
+              "words": ["seo", "better", "done", "with", "repetition"]},
 
              {"xml": '<row PostTypeId="1" CreationDate="2019-01-15T20:31:15.640" Score="5" Title="What is SEO?" />',
              "PostTypeId": 1,
              "CreationDate": "2019-01-15T20:31:15.640",
              "Score": 5,
-             "Title": "What is SEO?"},
+             "Title": "What is SEO?",
+             "words": ["what", "seo"]},
 
              {"xml": '<row PostTypeId="1" CreationDate="2020-01-15T20:31:15.640" Score="20" Title="Is Python better than Javascript?" />',
              "PostTypeId": 1,
              "CreationDate": "2020-01-15T20:31:15.640",
              "Score": 20,
-             "Title": "Is Python better than Javascript?"}]
+             "Title": "Is Python better than Javascript?",
+             "words": ["python", "better", "javascript"]}]
 
     post_tmp_file = tmpdir.join("posts.txt")
 
@@ -30,6 +33,13 @@ def stackoverflow_posts(tmpdir):
 
     return {"posts": posts,
             "posts_filepath": post_tmp_file.strpath}
+
+
+@pytest.fixture()
+def stop_words():
+    stop_words = ["is", "than"]
+
+    return stop_words
 
 
 def test_read_post(stackoverflow_posts):
@@ -45,3 +55,22 @@ def test_read_post(stackoverflow_posts):
         assert expect_post["CreationDate"] == post.creation_date
         assert expect_post["Score"] == post.score
         assert expect_post["Title"] == post.title
+
+
+def test_extract_all_words_from_posts(stackoverflow_posts, stop_words):
+
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
+
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
+
+    pipeline_sof.extract_all_words_from_posts(stop_words, stop_words)
+
+    posts = stackoverflow_posts["posts"]
+    for post in posts:
+        for except_word in post["word"]:
+            assert except_word in pipeline_sof.all_words
+
+
+
+
+
