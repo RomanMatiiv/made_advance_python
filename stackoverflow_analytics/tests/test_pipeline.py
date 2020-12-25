@@ -52,7 +52,7 @@ def test_read_post(stackoverflow_posts):
 
     for expect_post, post in zip(stackoverflow_posts["posts"], pipeline_sof.posts):
         assert expect_post["PostTypeId"] == post.post_type_id
-        assert expect_post["CreationDate"] == post.creation_date
+        assert expect_post["CreationDate"] == post.date
         assert expect_post["Score"] == post.score
         assert expect_post["Title"] == post.title
 

@@ -5,10 +5,10 @@ logger = logging.getLogger("post")
 
 
 class Post:
-    def __init__(self, title, score, creation_date, post_type_id=1):
+    def __init__(self, title, score, date, post_type_id=1):
         self.title = title
         self.score = score
-        self.creation_date = creation_date
+        self.date = date
         self.post_type_id = post_type_id
 
 

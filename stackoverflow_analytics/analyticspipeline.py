@@ -32,7 +32,7 @@ class StackOverFlowAnalyticsPipeline:
 
         self.posts = []
 
-        logger.debug("path to file with posts: {filepath}")
+        logger.debug(f"path to file with posts: {filepath}")
 
         with open(filepath, "r") as f:
             for raw_post in f.readlines():
@@ -56,6 +56,8 @@ class StackOverFlowAnalyticsPipeline:
         for post in self.posts:
             words = re.findall("\w+", post.title.lower())
             words = self._filtering_stop_words(words, stop_words)
+
+
 
             raise NotImplementedError
 
