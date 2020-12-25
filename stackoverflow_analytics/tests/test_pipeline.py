@@ -63,14 +63,30 @@ def test_extract_all_words_from_posts(stackoverflow_posts, stop_words):
 
     pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
 
-    pipeline_sof.extract_all_words_from_posts(stop_words, stop_words)
+    pipeline_sof.extract_all_words_from_posts(stop_words)
 
-    posts = stackoverflow_posts["posts"]
-    for post in posts:
-        for except_word in post["word"]:
-            assert except_word in pipeline_sof.all_words
+    all_expect_word = []
+    for post in stackoverflow_posts["posts"]:
+        all_expect_word.extend(post["words"])
+
+    all_extract_word = []
+    for word in pipeline_sof.all_words:
+        all_extract_word.append(word.word)
+
+    for expect_word in all_expect_word:
+        assert expect_word in all_extract_word
 
 
+def test_extract_all_words_check_stop_words(stackoverflow_posts, stop_words):
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
 
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
 
+    pipeline_sof.extract_all_words_from_posts(stop_words)
 
+    all_extract_word = []
+    for word in pipeline_sof.all_words:
+        all_extract_word.append(word.word)
+
+    for stop_w in stop_words:
+        assert stop_w not in all_extract_word

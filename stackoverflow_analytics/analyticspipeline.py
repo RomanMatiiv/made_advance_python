@@ -48,18 +48,34 @@ class StackOverFlowAnalyticsPipeline:
         return None
 
     def extract_all_words_from_posts(self, stop_words=None):
+        """
+        Извлекает все слова из поста
+
+        Выкидывая при этом стоп слова
+        Args:
+            stop_words: массив со стоп словами
+                        пример: ["is", "a", "then"]
+
+        Returns: None
+        """
         if self.posts is None:
             raise ValueError
 
         self.all_words = []
 
         for post in self.posts:
-            words = re.findall("\w+", post.title.lower())
-            words = self._filtering_stop_words(words, stop_words)
+            words_raw = re.findall("\w+", post.title.lower())
+            words_raw = self._filtering_stop_words(words_raw, stop_words)
+            # оставляю только уникальные
+            words_raw = set(words_raw)
+            words_raw = list(words_raw)
 
+            for word_raw in words_raw:
+                word = Word(word_raw, post.score, post.date)
 
+                self.all_words.append(word)
 
-            raise NotImplementedError
+        return None
 
     def get_words_between_date(self, words, start, end) -> List[Word]:
         raise NotImplementedError
@@ -70,7 +86,20 @@ class StackOverFlowAnalyticsPipeline:
     def get_top_n_words(self, words, top_n) -> List[Word]:
         raise NotImplementedError
 
-    def _filtering_stop_words(self, words, stop_words: List[str]) -> List[str]:
+    def _filtering_stop_words(self,
+                              words: List[str],
+                              stop_words: List[str]) -> List[str]:
+        """
+        Удаляет стоп слова
+
+        Args:
+            words: массив со словами
+                   Пример ["hello", "world"]
+            stop_words: массив со стоп словами
+                        Пример ["is", "than"]
+
+        Returns: массив словами без стоп слов
+        """
         if stop_words is None:
             return words
         else:
