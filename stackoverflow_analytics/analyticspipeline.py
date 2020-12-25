@@ -77,13 +77,13 @@ class StackOverFlowAnalyticsPipeline:
 
         return None
 
-    def get_words_between_date(self, words, start, end) -> List[Word]:
+    def get_words_between_date(self, start, end) -> List[Word]:
         raise NotImplementedError
 
-    def aggregate_same_words(self, words) -> List[Word]:
+    def aggregate_same_words(self, words: List[Word]) -> List[Word]:
         raise NotImplementedError
 
-    def get_top_n_words(self, words, top_n) -> List[Word]:
+    def get_top_n_words(self, words: List[Word], top_n: int) -> List[Word]:
         raise NotImplementedError
 
     def _filtering_stop_words(self,
