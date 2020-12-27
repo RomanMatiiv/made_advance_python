@@ -110,3 +110,71 @@ def test_extract_all_words_check_stop_words(stackoverflow_posts, stop_words):
 
     for stop_w in stop_words:
         assert stop_w not in all_extract_word
+
+
+def test_get_words_between_date_case_1(stackoverflow_posts, stop_words):
+    date_start = datetime(year=2018, month=1, day=1)
+    date_end = datetime(year=2018, month=1, day=1)
+
+    expected_words = stackoverflow_posts["posts"][0]["words"]
+
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
+    pipeline_sof.extract_all_words_from_posts(stop_words)
+
+    words_between_range = pipeline_sof.get_words_between_date(date_start,
+                                                              date_end)
+
+    assert len(words_between_range) == len(expected_words)
+
+    for word in words_between_range:
+        assert word.word in expected_words
+
+
+def test_get_words_between_date_case_2(stackoverflow_posts, stop_words):
+    date_start = datetime(year=2018, month=1, day=1)
+    date_end = datetime(year=2019, month=1, day=1)
+
+    expected_words = []
+    expected_words.extend(stackoverflow_posts["posts"][0]["words"])
+    expected_words.extend(stackoverflow_posts["posts"][1]["words"])
+
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
+    pipeline_sof.extract_all_words_from_posts(stop_words)
+
+    words_between_range = pipeline_sof.get_words_between_date(date_start,
+                                                              date_end)
+
+    assert len(words_between_range) == len(expected_words)
+
+    for word in words_between_range:
+        assert word.word in expected_words
+
+
+def test_get_words_between_date_empty(stackoverflow_posts, stop_words):
+    date_start = datetime(year=2018, month=1, day=1)
+    date_end = datetime(year=2019, month=1, day=1)
+
+    expected_words = []
+
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
+    pipeline_sof.extract_all_words_from_posts(stop_words)
+
+    words_between_range = pipeline_sof.get_words_between_date(date_start,
+                                                              date_end)
+
+    assert len(words_between_range) == len(expected_words)
+
+
+def test_get_words_between_date_incorrect_date_range(stackoverflow_posts, stop_words):
+    date_start = datetime(year=2020, month=1, day=1)
+    date_end = datetime(year=2018, month=1, day=1)
+
+    pipeline_sof = StackOverFlowAnalyticsPipeline()
+    pipeline_sof.read_posts(stackoverflow_posts["posts_filepath"])
+    pipeline_sof.extract_all_words_from_posts(stop_words)
+
+    with pytest.raises(ValueError):
+        pipeline_sof.get_words_between_date(date_start, date_end)
