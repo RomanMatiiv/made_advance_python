@@ -79,8 +79,19 @@ class StackOverFlowAnalyticsPipeline:
 
         return None
 
-    def get_words_between_date(self, start, end) -> List[Word]:
-        raise NotImplementedError
+    def get_words_between_date(self,
+                               date_start: datetime,
+                               date_end: datetime) -> List[Word]:
+        if date_end < date_start:
+            raise ValueError("start date must be early than end date")
+
+        result = []
+
+        for word in self.all_words:
+            if word.date >= date_start and word.date <= date_end:
+                result.append(word)
+
+        return result
 
     def aggregate_same_words(self, words: List[Word]) -> List[Word]:
         raise NotImplementedError
