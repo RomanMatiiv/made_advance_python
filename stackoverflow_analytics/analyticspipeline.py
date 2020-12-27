@@ -49,7 +49,7 @@ class StackOverFlowAnalyticsPipeline:
 
     def extract_all_words_from_posts(self, stop_words=None):
         """
-        Извлекает все слова из поста
+        Извлекает все слова из всех постов
 
         Выкидывая при этом стоп слова
         Args:
