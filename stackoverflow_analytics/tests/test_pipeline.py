@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from analyticspipeline import StackOverFlowAnalyticsPipeline
@@ -5,23 +7,41 @@ from analyticspipeline import StackOverFlowAnalyticsPipeline
 
 @pytest.fixture(scope='function')
 def stackoverflow_posts(tmpdir):
-    posts = [{"xml": '<row PostTypeId="1" CreationDate="2019-01-15T20:31:15.640" Score="10" Title="Is SEO better better better done with repetition?" />',
+    posts = [{"xml": '<row PostTypeId="1" CreationDate="2018-03-15T20:31:15.640" Score="10" Title="Is SEO better better better done with repetition?" />',
               "PostTypeId": 1,
-              "CreationDate": "2019-01-15T20:31:15.640",
+              "CreationDate": datetime(year=2018,
+                                       month=3,
+                                       day=15,
+                                       hour=20,
+                                       minute=31,
+                                       second=15,
+                                       microsecond=640),
               "Score": 10,
               "Title": "Is SEO better better better done with repetition?",
               "words": ["seo", "better", "done", "with", "repetition"]},
 
              {"xml": '<row PostTypeId="1" CreationDate="2019-01-15T20:31:15.640" Score="5" Title="What is SEO?" />',
              "PostTypeId": 1,
-             "CreationDate": "2019-01-15T20:31:15.640",
+              "CreationDate": datetime(year=2019,
+                                       month=1,
+                                       day=15,
+                                       hour=20,
+                                       minute=31,
+                                       second=15,
+                                       microsecond=640),
              "Score": 5,
              "Title": "What is SEO?",
              "words": ["what", "seo"]},
 
-             {"xml": '<row PostTypeId="1" CreationDate="2020-01-15T20:31:15.640" Score="20" Title="Is Python better than Javascript?" />',
+             {"xml": '<row PostTypeId="1" CreationDate="2020-01-15T20:32:15.640" Score="20" Title="Is Python better than Javascript?" />',
              "PostTypeId": 1,
-             "CreationDate": "2020-01-15T20:31:15.640",
+              "CreationDate": datetime(year=2020,
+                                       month=1,
+                                       day=15,
+                                       hour=20,
+                                       minute=32,
+                                       second=15,
+                                       microsecond=640),
              "Score": 20,
              "Title": "Is Python better than Javascript?",
              "words": ["python", "better", "javascript"]}]
