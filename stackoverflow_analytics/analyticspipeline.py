@@ -1,11 +1,11 @@
 import logging
 import re
+from datetime import datetime
 from typing import List
 from xml.etree import cElementTree as ET
 
 from post import Post
 from post import Word
-
 
 logger = logging.getLogger("pipeline")
 
@@ -16,7 +16,7 @@ class StackOverFlowAnalyticsPipeline:
         self.all_words = None
         self.aggregated_all_words = None
 
-    def read_posts(self, filepath) -> None:
+    def read_posts(self, filepath, date_format="%Y-%m-%dT%H:%M:%S.%f") -> None:
         """
         Чтение постов
 
@@ -24,6 +24,7 @@ class StackOverFlowAnalyticsPipeline:
 
         Args:
             filepath: путь до файла с постами в формате xml
+            date_format: формат даты в строке
 
         Returns: None
         """
@@ -39,8 +40,9 @@ class StackOverFlowAnalyticsPipeline:
                 raw_post = ET.fromstring(raw_post)
                 title = raw_post.attrib['Title']
                 score = int(raw_post.attrib['Score'])
-                creation_date = raw_post.attrib['CreationDate']
                 post_type_id = int(raw_post.attrib['PostTypeId'])
+                creation_date_str = raw_post.attrib['CreationDate']
+                creation_date = datetime.strptime(creation_date_str, date_format)
 
                 post = Post(title, score, creation_date, post_type_id)
                 self.posts.append(post)

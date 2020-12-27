@@ -1,11 +1,11 @@
 import logging
-
+from datetime import datetime
 
 logger = logging.getLogger("post")
 
 
 class Post:
-    def __init__(self, title, score, date, post_type_id=1):
+    def __init__(self, title: str, score: int, date: datetime, post_type_id=1):
         self.title = title
         self.score = score
         self.date = date
@@ -13,7 +13,7 @@ class Post:
 
 
 class Word:
-    def __init__(self, word, score, date):
+    def __init__(self, word: str, score: int, date: datetime):
         self.word = word
         self.score = score
         self.date = date
